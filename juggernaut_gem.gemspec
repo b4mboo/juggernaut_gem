@@ -1,14 +1,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{juggernaut}
-  s.version = "0.5.9"
+  s.name = %q{M4D-juggernaut}
+  s.version = "0.5.9.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Alex MacCaw"]
+  s.authors = ["Alex MacCaw, Dominik Mayer"]
   s.date = %q{2008-12-06}
   s.default_executable = %q{juggernaut}
-  s.description = %q{See Plugin README: http://juggernaut.rubyforge.org/svn/trunk/juggernaut/README}
+  s.description = %q{See Github for more info: http://github.com/M4D/juggernaut_gem}
   s.email = %q{info@eribium.org}
   s.executables = ["juggernaut"]
   s.extra_rdoc_files = ["Manifest.txt", "README.txt"]
