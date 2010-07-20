@@ -40,19 +40,19 @@ module Juggernaut
 
       def find_by_signature(signature)
         # signature should be unique
-        find do |client| 
+        find do |client|
           client.connections.select { |connection| connection.signature == signature }.any?
         end.first
       end
 
       def find_by_channels(channels)
-        find do |client| 
+        find do |client|
           client.has_channels?(channels)
         end
       end
 
       def find_by_id_and_channels(id, channels)
-        find do |client| 
+        find do |client|
           client.has_channels?(channels) && client.id == id
         end.first
       end
@@ -101,9 +101,10 @@ module Juggernaut
 
     def to_json
       {
-        :client_id  => @id, 
+        :client_id  => @id,
         :num_connections => @connections.size,
-        :session_id => @session_id
+        :session_id => @session_id,
+        :channels => self.channels
       }.to_json
     end
 
@@ -135,7 +136,7 @@ module Juggernaut
       return true unless options[:logout_url]
       post_request(options[:logout_url], [ ], :timeout => options[:post_request_timeout] || 5)
     end
-    
+
     def remove_connection(connection)
       @connections.delete(connection)
       self.reset_logout_timeout!
@@ -174,6 +175,12 @@ module Juggernaut
         return true if em.has_channels?(channels)
       end
       false
+    end
+
+    def add_channels(channels)
+      @connections.each do |em|
+        em.add_channels(channels)
+      end
     end
 
     def remove_channels!(channels)
@@ -231,7 +238,7 @@ module Juggernaut
         logger.error("#{url.to_s} timeout")
         return false
       end
-    end  
+    end
 
     def send_message_to_connections(msg, channels)
       @connections.each do |connection|
