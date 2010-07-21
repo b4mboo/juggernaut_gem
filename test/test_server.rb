@@ -55,6 +55,10 @@ class TestServer < Test::Unit::TestCase
       self.transmit :command => :query, :type => :remove_channels_from_client, :client_ids => clients, :channels => channels
       self
     end
+    def query_add_channels_to_clients(channels, clients)
+      self.transmit :command => :query, :type => :add_channels_to_clients, :client_ids => clients, :channels => channels
+      self
+    end
     def query_show_channels_for_client(client_id)
       self.transmit :command => :query, :type => :show_channels_for_client, :client_id => client_id
       self
@@ -372,8 +376,8 @@ class TestServer < Test::Unit::TestCase
       should "not include disconnected clients" do
         subscriber = nil
         with_server(:timeout => 0) do
-          self.new_client(:client_id => "sandra") { |c| c.subscribe %w() }
           self.new_client(:client_id => "tom") { |c| c.subscribe %w() }.close
+          self.new_client(:client_id => "sandra") { |c| c.subscribe %w() }
           subscriber = self.new_client(:client_id => "vivian") { |c| c.subscribe %w(); c.query_show_clients }
         end
         assert_not_nil subscriber
@@ -568,6 +572,21 @@ class TestServer < Test::Unit::TestCase
       
     end
     
+    context "add channel request" do
+
+      should "add new channels to specific clients without adding a new connection" do
+        with_server do
+          self.new_client(:client_id => "homer") do |c|
+            c.subscribe %w(one two)
+            c.query_add_channels_to_clients %w(three four), %w(homer)
+          end
+        end
+        assert_equal 1, @connections.size
+        assert_contains @connections.find { |c| c.instance_eval("@request[:client_id]") == "homer" }.channels, /four/
+      end
+
+    end
+
   end
   
 end

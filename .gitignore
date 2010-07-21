@@ -5,6 +5,7 @@
 # *.[oa]
 # *~
 
+.idea
 .DS_Store
 coverage/
 patches/

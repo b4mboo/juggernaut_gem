@@ -36,10 +36,12 @@ class TestClient < Test::Unit::TestCase
     
     should "have correct JSON representation" do
       assert_nothing_raised do
+        @client.stubs(:channels).returns(%w(one two))
         json = {
           "client_id"  => "jonny",
           "num_connections" => 1,
-          "session_id" => @request[:session_id]
+          "session_id" => @request[:session_id],
+          "channels" => %w(one two)
         }
         assert_equal json, JSON.parse(@client.to_json)
       end
@@ -167,6 +169,15 @@ class TestClient < Test::Unit::TestCase
         @s2.stubs(:channels).returns(%w(master slave2))
         @client.add_new_connection(@s2)
         assert_same_elements %w(master slave1 slave2), @client.channels
+      end
+
+      should "allow to add new channels to existing subscribers" do
+        @s1.stubs(:add_channels).returns(true)
+        @s1.stubs(:channels).returns(%w(one two))
+        connections = @client.connections.size
+        @client.add_channels(%w(one two))
+        assert_equal connections, @client.connections.size 
+        assert_same_elements %w(one two), @client.channels
       end
       
     end
